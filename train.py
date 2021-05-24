@@ -58,11 +58,11 @@ if __name__ == '__main__':
 
     transformer = transforms.Compose([
         transforms.Resize([556, 556]),
-        transforms.Resize([512, 512]),
+        transforms.RandomCrop([512, 512]),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor()
     ])
-    
+
     trainset=SaliconDataset(images_dir, fixations_dir, train_csv, transformer)
     
     train_lodaer = DataLoader(trainset, batch_size=batch_size, num_workers=0, shuffle=False)

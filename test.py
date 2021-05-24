@@ -41,17 +41,18 @@ if __name__ == '__main__':
         net = UNet().to(device)
     elif arch == "res_unet":
         net = ResUNet().to(device)
+    else:
+        raise Exception("Unknown network architecture: " + arch)
     
     net.load_state_dict(torch.load(args.checkpoint))
     
     for path in images:
-        print(path)
         img=Image.open(path)
         w = img.width
         h = img.height
         x = transformer(img).unsqueeze(0).to(device)
-        print(x.shape)
-        y = net(x)
+        with torch.no_grad():
+            y = net(x)
 
         out=y[0,0]
         mx = out.max()

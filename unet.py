@@ -55,13 +55,6 @@ class UNet(torch.nn.Module):
         self.layer9 = DoubleConvBN(128, 64)
         self.covn1x1 = torch.nn.Conv2d(in_channels = 64, out_channels=1, kernel_size = 1)
 
-    # def _crop(self, x, x_):
-    #     h_, w_ = x_.shape[2:]
-    #     h, w = x.shape[2:]
-    #     pad_h = int((h_ - h)/2)
-    #     pad_w = int((w_ - w)/2)
-    #     return x_[:, :, pad_h: h_-pad_h, pad_w: w_ - pad_w]
-
     def forward(self, x):
 
         x1 = self.layer1(x)
@@ -78,31 +71,22 @@ class UNet(torch.nn.Module):
         
         x5 = self.layer5(x4_)
         x5 = self.upsample1(x5)
-
-        # x4 = self._crop(x5, x4)
         x5 = torch.cat([x4, x5], dim=1)
 
         x6 = self.layer6(x5)
         x6 = self.upsample2(x6)
-
-        # x3 = self._crop(x6, x3)
         x6 = torch.cat([x3, x6], dim=1)
 
         x7 = self.layer7(x6)
         x7 = self.upsample3(x7)
-
-        # x2 = self._crop(x7, x2)
         x7 = torch.cat([x2, x7], dim=1)
 
         x8 = self.layer8(x7)
         x8 = self.upsample4(x8)
-
-        # x1 = self._crop(x8, x1)
         x8 = torch.cat([x1, x8], dim=1)
 
         x9 = self.layer9(x8)
-        
         x10 = self.covn1x1(x9)
-
         x11 = torch.sigmoid(x10)
+
         return x11

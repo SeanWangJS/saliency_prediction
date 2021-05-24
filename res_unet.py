@@ -100,17 +100,11 @@ class ResUNet(torch.nn.Module):
         x0 = self.init(x)
 
         x1 = self.down1(x0) 
-        # print(x1.shape)
         x2 = self.down2(x1)
-        # print(x2.shape)
         x3 = self.down3(x2)
-        # print(x3.shape)
         x4 = self.down4(x3)
-        # print(x4.shape)
-        x5 = self.down5(x4)   
-        # print(x5.shape)
+        x5 = self.down5(x4)       
         x6 = self.up1(x5)
-        # print(x6.shape)
 
         x7 = torch.cat([x4, x6], dim=1)
         x8 = self.conv1(x7)
@@ -129,7 +123,3 @@ class ResUNet(torch.nn.Module):
         x18 = self.conv1x1(x17)
     
         return x18
-
-# x = torch.rand(1, 3, 512, 512)
-# net = ResUNet()
-# print(net(x).shape)

@@ -3,3 +3,6 @@ runs/
 *.ipynb
 .vscode/
 __pycache__/
+output/*
+checkpoints/*
+data/*
