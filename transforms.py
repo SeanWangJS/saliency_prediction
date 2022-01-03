@@ -6,29 +6,29 @@ import random
 
 __all__ = ["Compose", "Resize", "RandomCrop", "RandomHorizontalFlip", "RandomVerticalFlip"]
 
-class Compose(object):
+class Compose(torch.nn.Module):
     def __init__(self, transforms):
         self.transforms = transforms
     
-    def __call__(self, img, fixations):
+    def forward(self, img, fixations):
         for transform in self.transforms:
-            img, fixations = transform(img, fixations)
+            img, fixations = transform.forward(img, fixations)
         
         return img, fixations
 
-class Resize(object):
+class Resize(torch.nn.Module):
     def __init__(self, size):
         if isinstance(size, numbers.Number):
             self.size = (int(size), int(size))
         else:
             self.size = size
     
-    def __call__(self, img, fixations):
+    def forward(self, img, fixations):
         img = F.resize(img, self.size)
         fixations = F.resize(fixations, self.size)
         return img, fixations
 
-class RandomCrop(object):
+class RandomCrop(torch.nn.Module):
     def __init__(self, size):
         if isinstance(size, numbers.Number):
             self.size = (int(size), int(size))
@@ -37,7 +37,7 @@ class RandomCrop(object):
 
     @staticmethod
     def get_params(img, output_size):
-        w, h = img.size
+        w, h = img.size()[-2:]
         target_height, target_width = output_size
         if w == target_width and h == target_height:
             return 0, 0, h, w
@@ -47,16 +47,16 @@ class RandomCrop(object):
 
         return i, j, target_height, target_width
 
-    def __call__(self, img, fixations):
+    def forward(self, img, fixations):
 
         i, j, h, w = self.get_params(img, self.size)
         img=F.crop(img, i, j, h, w)
         fixations = F.crop(fixations, i, j, h, w)
         return img, fixations
         
-class RandomHorizontalFlip(object):
+class RandomHorizontalFlip(torch.nn.Module):
     
-    def __call__(self, img, fixations):
+    def forward(self, img, fixations):
         
         if random.random() < 0.5:
             img = F.hflip(img)
@@ -64,14 +64,23 @@ class RandomHorizontalFlip(object):
 
         return img, fixations
 
-class RandomVerticalFlip(object):
+class RandomVerticalFlip(torch.nn.Module):
 
-    def __call__(self, img, fixations):
+    def forward(self, img, fixations):
         if random.random() < 0.5:
             img = F.vflip(img)
             fixations = F.vflip(fixations)
         
         return img, fixations
+
+class Normalize(torch.nn.Module):
+    def __init__(self, mean, std):
+        self.mean = mean
+        self.std = std
+    
+    def forward(self, imgs, fixations):
+        imgs = F.normalize(imgs, self.mean, self.std)
+        return imgs, fixations
 
 class ToTensor(object):
 
