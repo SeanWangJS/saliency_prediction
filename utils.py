@@ -16,11 +16,27 @@ def kld_loss(outputs: torch.Tensor, labels: torch.Tensor):
     outputs = outputs.reshape(b, c, -1)
     outputs=F.softmax(outputs, dim=2)
 
+    print(outputs.log())
+
     labels=F.interpolate(labels, size=(h, w), mode="bilinear", align_corners=False)
     labels = labels.reshape(b, c, -1)
     labels = F.softmax(labels, dim=2)
 
-    return F.kl_div(outputs.log(), labels, reduction='batchmean')
+    print(labels)
+
+    return F.kl_div(outputs, labels, reduction='batchmean')
+
+def bce(outputs: torch.Tensor, labels: torch.Tensor):
+    b, c, h, w = outputs.shape
+
+    labels=F.interpolate(labels, size=(h, w), mode="bilinear", align_corners=False)
+    labels = labels / 255.0
+    # print(labels)
+    # print(outputs)
+
+    loss = torch.nn.BCEWithLogitsLoss()(outputs, labels)
+    return loss
+    
 
 def bce_loss(outputs: torch.Tensor, labels: torch.Tensor):
     """
@@ -101,11 +117,11 @@ def generate(data: dict, split: str, result_dir: str="./data"):
     image_names=pd.Series(image_names)
     image_names.to_csv(f"{result_dir}/{split}-2.csv", header=False, index=False)
 
-# path = "D:/data/Datasets/SALICON/fixations_train2014.json"
-path = "./annotations/fixations_train2014examples.json"
-with open(path, "r") as f:
-    data=json.load(f)
+# # path = "D:/data/Datasets/SALICON/fixations_train2014.json"
+# path = "./annotations/fixations_train2014examples.json"
+# with open(path, "r") as f:
+#     data=json.load(f)
 
-# output_path="D:/data/Datasets/SALICON/train_fixations2"
-output_path="./data"
-generate(data, "train", output_path)
+# # output_path="D:/data/Datasets/SALICON/train_fixations2"
+# output_path="./data"
+# generate(data, "train", output_path)
