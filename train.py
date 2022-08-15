@@ -1,21 +1,16 @@
 import argparse
-
-from models.res_unet import ResUNet
-from models.salicon import SaliconNet
-from dataset import SaliconDataset
-
-from typing import List
+import os
+import time
 
 import torch
 from torch.utils.data.dataloader import DataLoader
 
 import transforms
 import utils
-import time
+from models.salicon import SaliconNet
+from dataset import SaliconDataset
 
 from tensorboardX import SummaryWriter
-
-import os
 
 writer = SummaryWriter()
 device = "cuda" if  torch.cuda.is_available()  else "cpu"
@@ -49,10 +44,10 @@ def train_epoch(epoch: int, model: torch.nn.Module, train_loader: DataLoader, op
     train_loss = 0
     init_time = time.time()
     for i, (inputs, targets) in enumerate(train_loader):
-        inputs = inputs.float().to(device)
-        targets = targets.float().to(device)
         # inputs = inputs.to(device) / 255.0
         # targets = targets.to(device) / 255.0
+        inputs = inputs.to(device)
+        targets = targets.to(device)
         inputs, targets = transformer.forward(inputs, targets)
         loss = train_step(model, inputs, targets, optimizer, criterion)
         train_loss += loss
@@ -70,6 +65,8 @@ def val_epoch(epoch: int, model: torch.nn.Module, val_loader: DataLoader, criter
     for i, (inputs, targets) in enumerate(val_loader):
         # inputs = inputs.to(device) / 255.0
         # targets = targets.to(device) / 255.0
+        inputs = inputs.to(device)
+        targets = targets.to(device)
         inputs, targets = transformer.forward(inputs, targets)
         with torch.no_grad():
             outputs = model(inputs)
@@ -107,7 +104,7 @@ if __name__ == '__main__':
 
     optimizer=torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9, weight_decay=0.0005)
     scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer, base_lr=0.0005, max_lr=0.01)
-    criterion = utils.bce
+    criterion = utils.kld_loss2
 
     for epoch in range(start_epoch, start_epoch + nEpochs, 1):
         train_epoch(epoch, model, train_loader, optimizer, criterion, transformer)

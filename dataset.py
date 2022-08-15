@@ -1,41 +1,37 @@
-import torch
+from typing import Union, Tuple
+import glob
+import os
 
+import torch
 from torch.utils.data import Dataset
+from torchvision.io import read_image
 
 import pandas as pd
-from torchvision.io import read_image
-from typing import Union, Tuple
+
+
 import transforms as T
-
-from concurrent.futures import ThreadPoolExecutor
-
-executor = ThreadPoolExecutor(max_workers=4)
 
 class SaliconDataset(Dataset):
 
-    cache = []
-
     def __init__(self, root_dir, split, input_size: Union[int, Tuple[int, int]]):
         self.images_dir = root_dir + "/" + split
-        self.fixations_dir = root_dir + "/" + split + "_fixations"
+        self.fixations_dir = root_dir + "/fixations_" + split
         self.input_size = input_size
-        df=pd.read_csv(root_dir + "/" + split + ".csv", header=None)
-        self.images_name=df[0].tolist()
+        self.image_names = [os.path.basename(path) for path in glob.glob("{}/*.jpg".format(self.images_dir))]
 
     def __len__(self):
-        return len(self.images_name)   
+        return len(self.image_names)
 
     def __getitem__(self, idx):
-        
 
-        file_name=self.images_name[idx]
-        img = read_image(self.images_dir + "/" + file_name)
-        fixation = read_image(self.fixations_dir + "/" + file_name)
+        file_name=self.image_names[idx]
+        img = read_image(self.images_dir + "/" + file_name) / 255.0
+        fixation = read_image(self.fixations_dir + "/" + file_name) / 255.0
 
         img, fixation = T.Resize(self.input_size).forward(img, fixation)
 
         c = img.shape[0]
         if c == 1:
             img = torch.cat([img, img, img], dim=0)
-        
+
         return img, fixation

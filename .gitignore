@@ -6,3 +6,4 @@ __pycache__/
 output/*
 checkpoints/*
 data/*
+.pkl_memoize_py3

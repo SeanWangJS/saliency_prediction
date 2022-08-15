@@ -18,10 +18,11 @@ class SaliconNet(torch.nn.Module):
         self.coarse_backbone = backbone
         self.fine_backbone = copy.deepcopy(backbone)
         self.conv1x1 = torch.nn.Conv2d(in_channels=1024, out_channels=1, kernel_size=1, stride=1, padding=0)
+        self.sigmoid = torch.nn.Sigmoid()
 
     def soft_binarization(self, x):
         x = torch.pow(x, 2)
-        return x / (x + 0.01**2)
+        return x / (x + 0.1**2)
 
     def forward(self, x):
 
@@ -38,6 +39,8 @@ class SaliconNet(torch.nn.Module):
 
         x = torch.cat((fine, coarse), dim=1)        
         x = self.conv1x1(x)
+
+        x = self.sigmoid(x)
         x = self.soft_binarization(x)
 
         return x

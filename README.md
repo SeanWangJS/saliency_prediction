@@ -8,11 +8,17 @@ Customized implementation of the paper [SALICON: Reducing the Semantic Gap in Sa
 
 #### Dataset Preparing
 
-Download Salicon dataset and then generate the saliency map by using fixation_train/val/test2014.json files. See [utils.py](utils.py) for detail, and the dataset examples are shown in directory ./data_sample
+Download Salicon dataset and create the saliency map by using fixation_train/val/test2014.json files. 
+
+```shell
+python create_dataset.py --salicon_dir=dataset_example --num_thread=6
+```
+
+The dataset examples can be found in directory ./dataset_example
 
 #### Prediction
 
-Get the checkpoint file from [here](https://drive.google.com/file/d/15wD0XMI6NPWDeJX2n7R6gAerZcHY3XWM/view?usp=sharing).
+Get the checkpoint file from [here](https://drive.google.com/file/d/1LXfl2el3Di_K6n0sHb_6A0VHHQIY_ftw/view?usp=sharing).
 
 ```shell
 python test.py --images=/path/to/image_or_folder --checkpoint=/path/to/your/checkpoint_file --output=/folder/to/output_images
@@ -21,11 +27,11 @@ python test.py --images=/path/to/image_or_folder --checkpoint=/path/to/your/chec
 #### Train
 
 ```shell
-python train.py --data_dir=/path/to/data_folder
+python train.py --data_dir /opt/dataset/SALICON --checkpoints_dir ./checkpoints --batch_size 16 --nepochs 60
 ```
 
 ### Result
 
 Saliency prediction examples are shown below
 
-![](./resources/result.jpg)
+![](./resources/result.png)

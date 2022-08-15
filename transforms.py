@@ -84,7 +84,7 @@ class Normalize(torch.nn.Module):
 
 class ToTensor(object):
 
-    def __call__(self, img, fixations):
+    def forward(self, img, fixations):
         img = F.to_tensor(img)
         fixations = F.to_tensor(fixations)
         return img, fixations
