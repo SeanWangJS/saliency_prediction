@@ -6,7 +6,7 @@ from torchvision import models
 class SaliconNet(torch.nn.Module):
 
     def resnet_backbone(self):
-        backbone = models.resnet34(pretrained=True)
+        backbone = models.resnet34()
         children = list(backbone.children())[:-2]
         backbone = torch.nn.Sequential(*children)
         return backbone
