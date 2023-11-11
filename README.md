@@ -18,7 +18,7 @@ The dataset examples can be found in directory ./dataset_example
 
 #### Prediction
 
-Get the checkpoint file from [here](https://drive.google.com/file/d/1LXfl2el3Di_K6n0sHb_6A0VHHQIY_ftw/view?usp=sharing).
+Get the checkpoint file from [here](https://drive.google.com/file/d/1YwDdvNOUH01MgfZCqszQV9xwWdV4gsrm/view?usp=sharing).
 
 ```shell
 python test.py --images=/path/to/image_or_folder --checkpoint=/path/to/your/checkpoint_file --output=/folder/to/output_images
@@ -35,3 +35,7 @@ python train.py --data_dir /opt/dataset/SALICON --checkpoints_dir ./checkpoints 
 Saliency prediction examples are shown below
 
 ![](./resources/result.png)
+
+### TensorRT Optimization
+
+See [Here](./tensorrt/README.md)
